@@ -2,19 +2,26 @@
 # frozen_string_literal: true
 
 # Verifies that every code citation in docs/ resolves to a real file, a real line,
-# and (when the citation immediately precedes a fenced code block) that the block
-# quotes that line correctly.
+# and (when the citation's line ends with ':' and immediately precedes a fenced
+# code block) that the block quotes that line correctly. A citation line not
+# ending in ':' is a prose reference, not a quote assertion — a fence following
+# it is treated as illustrative and is not quote-checked.
 #
 # Citation forms (see docs/README.md):
 #   `app/models/user.rb:23`                     -> this repo
 #   `rwr:chatwoot app/models/account.rb:40`     -> a repo in real-world-rails
+#   `Gemfile:3`                                 -> a root-level, extensionless file
 #
 # Detection is two-stage:
 #   - Loose pass:  anything that *looks like* a citation attempt — a backtick-
-#                  delimited span containing a `/` and ending in `:<digits>`.
+#                  delimited span ending in `:<digits>` (a `://` guard keeps a
+#                  URL with a port from being read as a citation).
 #   - Strict pass: the span must additionally match the real grammar (optional
-#                  `rwr:<app> ` prefix, a path ending in a recognised code-file
-#                  extension, then `:<digits>`).
+#                  `rwr:<app> ` prefix, then a path ending in a recognised
+#                  code-file extension OR an extensionless bare filename such
+#                  as `Gemfile`/`Rakefile`, then `:<digits>`). Whether the path
+#                  is real is settled by the file-existence check below, not
+#                  by this shape check.
 # A span that passes loose but fails strict is reported as a failure ("unrecognized
 # citation form") rather than silently ignored — malformed citations must never
 # disappear from the count.
@@ -43,7 +50,7 @@ RWR_ROOT  = File.expand_path('~/projects/rails-study/real-world-rails/apps')
 # Anything backtick-delimited that looks like it is trying to be a citation.
 LOOSE_CITATION = %r{
   `                                        # opening backtick
-  (?<body>[^`\n]*/[^`\n]*:\d+)             # contains a slash, ends in :<digits>
+  (?<body>[^`\n]*:\d+)                     # ends in :<digits>
   `                                        # closing backtick
 }x
 
@@ -55,7 +62,11 @@ CODE_EXTENSIONS = %w[rb sql erb yml yaml js jsx ts tsx json rake ru haml slim].f
 STRICT_CITATION = %r{
   \A
   (?:rwr:(?<app>[a-z0-9_.-]+)\s+)?          # optional picked-repo prefix
-  (?<path>[\w./-]+\.(?:#{CODE_EXTENSIONS.join('|')}))
+  (?<path>
+    [\w./-]+\.(?:#{CODE_EXTENSIONS.join('|')})  # path with a recognised code-file extension
+    |
+    [\w/-]+                                     # or an extensionless bare filename (Gemfile, Rakefile, ...)
+  )
   :(?<line>\d+)
   \z
 }x
@@ -150,7 +161,7 @@ targets.sort.each do |doc|
       else
         in_fence = true
         awaiting_content = false
-        if prev_nonblank
+        if prev_nonblank && prev_nonblank[:text].strip.end_with?(':')
           last = scan_citations(prev_nonblank[:text]).last
           if last && last[:strict]
             pending = { strict: last[:strict] }
