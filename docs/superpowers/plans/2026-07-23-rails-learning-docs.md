@@ -87,6 +87,23 @@ to run.
   `~/projects/rails-study/real-world-rails/apps/`). Every later task runs this command
   as its verification step.
 
+  **As-built, after review** (the steps below are the first cut; three findings and one
+  added requirement changed the contract, and later tasks depend on the final one):
+  - **Two-stage detection.** A loose pass finds anything *shaped* like a citation; a
+    strict pass validates it. Loose-but-not-strict is a reported failure, so a
+    malformed citation fails loudly instead of being silently unmatched. The original
+    single regex made a typo'd citation invisible — `checked 0 citation(s) … OK`.
+  - **No path-prefix allowlist.** Any path shape is accepted; existence settles it.
+    The original `app|lib|db|spec|config|bin` list silently dropped `test/` citations
+    into Minitest-based picked repos.
+  - **Bad CLI arguments** produce a reported failure, not a Ruby backtrace.
+  - **Scoped quote checking.** When a fenced code block sits directly under a citation,
+    the block's first non-empty line must match the cited line (compared stripped).
+    Inline prose quotes are deliberately not checked — too fuzzy to match reliably.
+  - **`docs/superpowers/` is excluded from the default glob**, since the spec and this
+    plan discuss citations rather than depend on them and deliberately contain broken
+    examples. An explicit path argument still checks them.
+
 - [ ] **Step 1: Write the failing test — a scratch doc with one good and two bad citations**
 
 ```bash
@@ -274,14 +291,32 @@ durable part.
 - This repo: `` `app/models/user.rb:23` ``
 - A picked repo: `` `rwr:chatwoot app/models/account.rb:40` ``
 
-Check every citation still resolves:
+Where the quote is a fenced code block directly under the citation, put it in that
+shape — the checker verifies those automatically:
+
+    **Where it shows up** — `app/models/user.rb:23`:
+
+    ```ruby
+    belongs_to :path, optional: true, counter_cache: true
+    ```
+
+Check every citation:
 
 ```bash
 ruby docs/bin/verify_citations.rb
 ```
 
-Exits 0 when clean. Run it after a rebase onto upstream — that is when line numbers
-move.
+Exits 0 when clean. It checks three things: the file exists, the line is in range,
+and — for a fenced block sitting directly under a citation — that the quoted text
+still matches that line. It also reports anything *shaped* like a citation that it
+cannot parse, so a typo fails loudly instead of passing unnoticed.
+
+Quotes written inline in prose are **not** machine-checked; they are too fuzzy to match
+reliably. Those stay your responsibility.
+
+Run it after a rebase onto upstream — that is when line numbers move. Process
+documents under `docs/superpowers/` are skipped by default, since they discuss
+citations rather than depend on them; pass one as an argument to check it anyway.
 
 ## Branch rules
 
@@ -1720,7 +1755,9 @@ resolves these against `~/projects/rails-study/real-world-rails/apps/`.
 - [ ] **Step 3: Run the full verifier across every doc**
 
 Run: `ruby docs/bin/verify_citations.rb`
-Expected: exit 0, `OK`, with a checked count in the low dozens across 10 files.
+Expected: exit 0, `OK`, with a checked count in the low dozens. Files under
+`docs/superpowers/` are excluded from the default glob, so the spec and this plan are
+not counted.
 
 - [ ] **Step 4: Verify every file the README promises now exists**
 
