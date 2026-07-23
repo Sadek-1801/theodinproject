@@ -280,7 +280,88 @@ Arel.
 
 **Estimate:** 80 h (±30%)
 
-<!-- GATES: filled by Task 6 -->
+### Gate questions
+
+Answer in writing before opening any file. For questions about emitted SQL, write your
+prediction down first, then check in `rails console` with `.to_sql` or the log.
+
+1. **Why `source:`.** `app/models/user.rb:14` is
+   `has_many :lesson_completions, dependent: :destroy` and line 15 is
+   `has_many :completed_lessons, through: :lesson_completions, source: :lesson`. Why
+   is `source:` required here but not on a plain `has_many :through`? What does Rails
+   try first, and what error do you get if you omit it?
+
+2. **Polymorphic + counter_cache together.** `app/models/like.rb:3` is
+   `belongs_to :likeable, polymorphic: true, counter_cache: true`. Name the two
+   columns polymorphic requires. Then: why can Postgres not put a foreign key
+   constraint on that association, and what does `counter_cache` have to do to find
+   the right counter column when the parent could be several different classes?
+
+3. **`inverse_of` is not cosmetic.** `app/models/user.rb:18` is
+   `has_many :flags, foreign_key: :flagger_id, dependent: :destroy, inverse_of: :flagger`.
+   What does `inverse_of` change at runtime? Construct a concrete two-line console
+   session where omitting it produces a stale object or an extra query. Why does Rails
+   need to be told here but not for `has_many :likes` on line 21?
+
+4. **`dependent:` in full.** Lines 14–21 of `app/models/user.rb` use
+   `dependent: :destroy` six times and `dependent: nil` once, on line 20:
+   `has_many :announcements, dependent: nil`. What does `dependent: nil` mean, and why
+   write it explicitly rather than omitting the option? What is the difference between
+   `:destroy`, `:delete_all`, and `:nullify` in terms of SQL emitted and callbacks run?
+
+5. **Arel in a scope.** `app/models/user.rb:25` is
+   `scope :created_after, ->(date) { where(arel_table[:created_at].gt(date)) }`, while
+   line 26 is `scope :signed_up_on, ->(date) { where(created_at: date.all_day) }` —
+   two different styles in adjacent lines. What does the Arel form give you that
+   `where("created_at > ?", date)` does not? Name the specific thing that breaks with
+   the string form when the scope is merged into a join.
+
+6. **`includes` and what it decides.** `app/controllers/courses_controller.rb:7` is
+   `@sections = @course.sections.includes(:lessons)`. Does `includes` emit one query or
+   two? What makes Rails switch between `preload` and `eager_load` behaviour behind it,
+   and how do you force each? Which one is wrong if you then call
+   `.where(lessons: { … })`?
+
+7. **Two callbacks in the whole app.** This repo has 44 models and exactly two
+   ActiveRecord callbacks: `app/models/user.rb:4`, `before_create :enroll_in_foundations`,
+   and `app/models/project_submission.rb:5`, `before_update do` in block form.
+   Everything else that could have been a callback is a service object — see
+   `app/services/users/reset_progress.rb:1`. Why? Name three concrete failure modes of
+   callback-heavy models, and say what makes these two the acceptable exceptions. Then:
+   why is one written as a symbol and the other as a block — is that a style choice or
+   a capability difference?
+
+8. **Optimistic locking.** Nothing in this repo uses it. Describe the exact
+   lost-update scenario it solves, name the column Rails looks for, and say what
+   exception you get and where you would rescue it. Then say why a course platform can
+   get away without it and what kind of feature would force the issue.
+
+### Anchors
+
+| File | Why |
+|---|---|
+| `app/models/user.rb:1` | 87 lines and the densest association file here — `has_many :through`, `source:`, `foreign_key:`, `inverse_of:`, `as:`, `dependent:`, `counter_cache:`, Arel scopes, and the app's only callback. Read the whole file. |
+| `app/models/like.rb:3` | Polymorphic and `counter_cache` on one line |
+| `app/models/notification.rb:2` | `belongs_to :recipient, polymorphic: true` — a second polymorphic shape to compare |
+| `app/models/concerns/likeable.rb:5` | The `has_many :likes, as: :likeable` other half of the polymorphic pair |
+| `app/controllers/courses_controller.rb:7` | `includes` in a real controller action |
+| `app/models/project_submission.rb:2` | `include Discard::Model` — soft delete, and how it interacts with `dependent:`; line 5 is the app's other callback |
+| `app/services/users/reset_progress.rb:1` | What this app does *instead* of callbacks |
+
+**Not anchorable here.** No STI and no `delegated_type` anywhere in this repo — the
+domain never needed either. For gate 8's neighbours, use the Rails Guides on
+inheritance and delegated types, and note that the absence itself is data: both
+patterns are rarer in production than tutorials suggest.
+
+### Second exposure
+
+**chatwoot**, at stage 6, where account scoping puts every association behind a tenant
+boundary — the same association options under a constraint this repo never applies.
+
+### Exit criteria
+
+Gates 1–8 at `✓`, plus: given any association line in `app/models/user.rb:1`, you can
+state the SQL it will emit and which columns must exist for it to work.
 
 ---
 
