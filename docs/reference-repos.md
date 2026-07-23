@@ -14,12 +14,12 @@ chatwoot weeks after meeting it here is spaced repetition, which beats massed st
 ## Primary specimen — this repo
 
 Rails 8.1, actively maintained, and unusually disciplined: the largest model is 87
-lines (`app/models/user.rb:1`), services are under 45 lines, and there are 228 spec
+lines (`app/models/user.rb:1`), services are under 45 lines, and there are 163 spec
 files. Real production hygiene — Sentry, rack-attack, Flipper, sidekiq-cron, VCR,
 cuprite.
 
 **What it cannot teach:** the domain is small. A 396-line schema, essentially no API
-surface, no money, no multi-tenancy, two ActiveRecord callbacks in 44 models. Those
+surface, no money, no multi-tenancy, two ActiveRecord callbacks in 23 models. Those
 absences are exactly what the picks below cover — and several of them are worth
 noticing as findings in their own right rather than treated only as gaps.
 

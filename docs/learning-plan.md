@@ -139,7 +139,7 @@ Answer in writing before opening any file.
 
 | File | Why |
 |---|---|
-| `app/models/concerns/likeable.rb:1` | 31 lines; covers `extend ActiveSupport::Concern`, `included do`, blocks, and instance methods in one readable unit. Read the whole file. |
+| `app/models/concerns/likeable.rb:1` | 32 lines; covers `extend ActiveSupport::Concern`, `included do`, blocks, and instance methods in one readable unit. Read the whole file. |
 | `app/models/user.rb:45` | `Hash.new` with a default block — a closure capturing `self` |
 | `app/services/course_progress.rb:24` | `\|\|=` memoization, three times in one file |
 | `app/models/project_submission.rb:5` | `before_update do` — a callback in block form; contrast with the symbol form at `app/models/user.rb:4` |
@@ -200,7 +200,7 @@ running SQL is not the same as reading the answer.
    with it.
 
 3. **Missing foreign keys.** `db/schema.rb` has 64 `t.index` lines but only 13
-   `add_foreign_key` lines, across 44 models. Name three things that can go wrong in a
+   `add_foreign_key` lines, across 23 ActiveRecord models. Name three things that can go wrong in a
    table with no FK constraint, then give the two most common legitimate reasons a
    production team omits one. (Look at *which* tables have them before answering.)
 
@@ -322,7 +322,7 @@ prediction down first, then check in `rails console` with `.to_sql` or the log.
    and how do you force each? Which one is wrong if you then call
    `.where(lessons: { … })`?
 
-7. **Two callbacks in the whole app.** This repo has 44 models and exactly two
+7. **Two callbacks in the whole app.** This repo has 23 ActiveRecord models and exactly two
    ActiveRecord callbacks: `app/models/user.rb:4`, `before_create :enroll_in_foundations`,
    and `app/models/project_submission.rb:5`, `before_update do` in block form.
    Everything else that could have been a callback is a service object — see
@@ -386,7 +386,7 @@ cuprite, what to test, coverage vs confidence, TDD workflow.
 
 **TOP:** *Testing Ruby with RSpec* (TDD, Intro to RSpec, Connect Four) — **partial**,
 plain Ruby only. Rails-specific request and system specs, FactoryBot, VCR, and cuprite
-are this stage's work. This repo has 228 spec files to read.
+are this stage's work. This repo has 163 spec files to read.
 
 **Estimate:** 90 h (±30%) · **Gates:** authored when stage 3 nears completion.
 
