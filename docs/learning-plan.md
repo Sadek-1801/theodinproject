@@ -91,7 +91,77 @@ after Hartl.
 
 **Estimate:** 70 h (±30%)
 
-<!-- GATES: filled by Task 4 -->
+### Gate questions
+
+Answer in writing before opening any file.
+
+1. **Blocks, procs, and lambdas.** What does `return` do inside a lambda versus inside
+   a proc? What about `yield` inside a method that was called without a block? Then
+   read `app/models/concerns/likeable.rb:4` — `included do` takes a block; which of the
+   three is it, and what is `self` inside it?
+
+2. **`included do` vs a plain module method.** `app/models/concerns/likeable.rb:2` says
+   `extend ActiveSupport::Concern`, and lines 4–7 wrap `has_many` and `attribute` in
+   `included do`. Why can't those two lines sit directly in the module body alongside
+   `def liked_by?` on line 9? What is the receiver in each case?
+
+3. **`include` vs `extend`.** `Likeable` is `include`d into models; `ActiveSupport::Concern`
+   is `extend`ed into `Likeable`. State the rule in one sentence, then predict what
+   `Likeable.singleton_class.ancestors` contains.
+
+4. **Method lookup.** If a model both `include`s `Likeable` and defines its own
+   `liked_by?`, which wins? Now: if `Likeable` were `prepend`ed instead, which wins?
+   How would you check at runtime without editing either file?
+
+5. **Default-block hashes.** `app/models/user.rb:45` is
+   `@progress ||= Hash.new { |hash, c| hash[c] = CourseProgress.new(c, self) }`.
+   When does that block run? How many times, for three lookups of the same key? What
+   would break if the block were `{ |_hash, c| CourseProgress.new(c, self) }` — no
+   assignment?
+
+6. **`||=` and falsy memoization.** `app/services/course_progress.rb:24` memoizes with
+   `@lesson_ids ||= course.lesson_ids`. Under what value of the memoized result does
+   this idiom silently recompute every call? Which of the memoized methods in that
+   file could legitimately hit that case?
+
+7. **Keyword args and shorthand.** `app/models/concerns/likeable.rb:10` is
+   `likes.exists?(user:)`. Write out what that shorthand expands to, and say which
+   Ruby version introduced it. Then: why does `has_many :likes, as: :likeable` on
+   line 5 use symbols rather than keyword arguments?
+
+8. **Exceptions.** Ruby's `rescue` with no class named catches `StandardError`, not
+   `Exception`. Why does that distinction matter, and what would you break by writing
+   `rescue Exception`? Anchor: `app/controllers/application_controller.rb:10`,
+   `rescue_from ActiveRecord::RecordNotFound, with: :not_found_error` — is `rescue_from`
+   the same mechanism as `rescue`?
+
+### Anchors
+
+| File | Why |
+|---|---|
+| `app/models/concerns/likeable.rb:1` | 31 lines; covers `extend ActiveSupport::Concern`, `included do`, blocks, and instance methods in one readable unit. Read the whole file. |
+| `app/models/user.rb:45` | `Hash.new` with a default block — a closure capturing `self` |
+| `app/services/course_progress.rb:24` | `\|\|=` memoization, three times in one file |
+| `app/models/project_submission.rb:5` | `before_update do` — a callback in block form; contrast with the symbol form at `app/models/user.rb:4` |
+| `app/controllers/application_controller.rb:10` | `rescue_from` as a class-level analogue of `rescue` |
+
+**Not anchorable here.** This repo contains no `define_method`, `method_missing`,
+`each_with_object`, `reduce`, or `inject` in `app/` — a finding worth noticing in its
+own right: a disciplined production Rails app barely metaprograms. For those
+sub-topics use TOP's Ruby course → *Advanced Ruby* (Blocks, Custom Enumerables) and
+the Rails source itself (`ActiveSupport::Concern` is ~150 lines and is the canonical
+`define_method`/`included` example).
+
+### Second exposure
+
+None scheduled. Ruby idiom recurs constantly in every later stage, which is spacing
+enough.
+
+### Exit criteria
+
+Gates 1–8 at `✓`, and you can read
+`app/models/concerns/likeable.rb:1` aloud line by line explaining what each does and
+what `self` is at that point.
 
 ---
 
