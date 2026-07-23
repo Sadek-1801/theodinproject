@@ -16,8 +16,9 @@ The docs live inside the theodinproject fork because that codebase is the primar
 are anchored to real files in it rather than taught in the abstract.
 
 **Scope-complete, time-elastic.** The plan enumerates everything needed. The calendar
-is a derived annotation, never a constraint. Estimated total: **~990 hours** (±30%),
-which at ~10 h/week is roughly two years. Nothing is cut to fit a deadline.
+is a derived annotation, never a constraint. Estimated total: **~1,060 hours** (±30%)
+— 990 h on the main track plus a 70 h parallel CS track — which at ~10 h/week is
+roughly two years. Nothing is cut to fit a deadline.
 
 ---
 
@@ -55,7 +56,9 @@ for stages 4, 10, 11, and 14, which are genuinely new and are taught from zero.
 
 - **Not coupled to the starter kit.** `~/projects/starter-kit/rails-template` is
   already fully planned via its own `ROADMAP.md` and design spec. These docs address
-  learning only. No cross-references that create a dependency in either direction.
+  learning only, and neither plan's schedule may depend on the other's. Naming the kit
+  as one of the places code practice happens (§5.6) is a statement of fact, not a
+  dependency: no stage waits on a kit phase, and no kit phase waits on a stage.
 - **Not a contribution to upstream TheOdinProject.** Lives on `notes` only.
 - **Not a curriculum built from real-world-rails.** That corpus is a *reference
   library*, plus a source of 2–3 hand-picked second-exposure repos. It is not
@@ -74,7 +77,8 @@ theodinproject/                    (fork; branch: notes)
     ├── learning-plan.md           the spine: stages, gates, estimates
     ├── progress.md                confidence per stage; gates advancement
     ├── questions.md               running queue of open questions
-    ├── interview-prep.md          retrieval under pressure
+    ├── interview-prep.md          technical retrieval under pressure
+    ├── job-search.md              the non-technical hiring process
     ├── reference-repos.md         the hand-picked apps and what each is for
     ├── concepts/                  one file per concept, in the learner's words
     └── superpowers/specs/         this spec
@@ -167,6 +171,20 @@ understood. This is the highest-value and least enjoyable part of the system, an
 first thing likely to be abandoned — `interview-prep.md` is the corrective, because
 explaining out loud exposes what silent reading hides.
 
+**Code-writing practice lives outside this doc set — deliberately** (decided
+2026-07-23). Two outlets already exist and neither needs reinventing:
+
+- **TOP's own curriculum projects** — 15 Ruby and 11 Rails projects (Micro-Reddit,
+  Members Only, Flight Booker, Odin Book, …), already sequenced and free. See §6.1.
+- **The starter kit** (`~/projects/starter-kit/rails-template`), built on its own
+  independent plan.
+
+No per-stage exercises are invented here. That means these docs are a *reading and
+recall* system by design, not a complete pedagogy — they are one half of a pair, and
+the other half is a real editor with real code in it. If practice lapses, the gates
+will still pass while actual ability stalls; that is the known failure mode of this
+split, and the reason §10 requires the weak-spot list to stay honest.
+
 ### 5.7 Known costs (accepted)
 
 - Gates add friction; some sessions will feel like homework.
@@ -199,7 +217,7 @@ gaps this repo **cannot** teach — they are where picked repos are used.
 | 13 | **Ops & deploy** | Docker, Kamal, env & credentials, zero-downtime migrations in production, backups, Sentry & monitoring, log aggregation, CI/CD | 60 |
 | 14 | **Real-codebase work** *(new)* | reading unfamiliar code fast, Rails version upgrades, legacy patterns & deprecations, debugging production issues, estimation & scoping | 60 |
 
-**Total ≈ 990 h.**
+**Main track ≈ 990 h.** Plus the 70 h parallel CS track (§6.2) = **≈ 1,060 h total.**
 
 Cross-cutting topics are folded in where they naturally arise rather than given their
 own stages: ActiveStorage, ActionMailer, i18n, ActiveSupport, Git/PR workflow.
@@ -209,6 +227,64 @@ working code over a badly modeled schema — the characteristic failure of front
 developers moving to backend. Stage 4 is early despite being new material so that
 every later stage can be practised through tests. Stage 7 is cheap because Ember
 experience transfers almost directly.
+
+### 6.1 Relationship to TOP's own curriculum
+
+The learner is also working **TOP's Full Stack Ruby on Rails path**. The two are
+complementary rather than competing, and the split is asymmetric: TOP is breadth-first
+and **project-driven**; this plan is depth-first and **codebase-driven**. TOP takes you
+to junior; this plan takes you to hireable-professional. Where TOP covers a stage, use
+**TOP's lessons and projects as the guided path** and use this plan's gates only to
+verify retention — do not re-derive material TOP already sequences well.
+
+Course outline below is taken from this repo's own seed fixtures
+(`db/fixtures/paths/full_stack_rails/courses/`), not from marketing copy.
+
+| Stage | TOP coverage | Verdict |
+|---|---|---|
+| 0 Ruby fluency | Ruby → *Advanced Ruby* (Blocks, Pattern Matching, Custom Enumerables), *OOP Basics* | **Use TOP.** Skip *Basic Ruby* — below level after Hartl. |
+| 1 Database | Databases → 3 lessons total (*Databases*, *Databases and SQL*, *SQL Zoo*) | **Badly insufficient.** No indexes, `EXPLAIN`, transactions, locking, or constraints. TOP is a starting point; this plan's 90 h carries it. |
+| 2 ActiveRecord | Rails → *Active Record Basics*, *Advanced Forms and Active Record* (Queries, Associations, Callbacks). Projects: Micro-Reddit, Private Events, Flight Booker | **Use TOP** for the guided path; this plan adds `includes`/`preload`/`eager_load`, STI vs delegated types, optimistic locking, Arel. |
+| 3 Request layer | Rails → *Rails Basics* (Routing, Controllers, Views, Store App) | **Use TOP.** This plan adds Rack/middleware depth. |
+| 4 Testing / RSpec | Ruby → *Testing Ruby with RSpec* (TDD, Intro to RSpec, Connect Four) | **Partial.** Teaches RSpec on plain Ruby only. Rails-specific request/system specs, FactoryBot, VCR, cuprite remain this plan's work. |
+| 5 App architecture | — | **Nothing.** Entirely this plan. |
+| 6 Auth & authz | Rails → *Forms and Authentication* (Sessions, Cookies and Authentication; Members Only!) | **AuthN only, hand-rolled.** No Devise, no OmniAuth, no authorization at all. |
+| 7 Frontend in Rails | Rails → *Assets and Navigation* (Asset Pipeline, Importmaps, Turbo Drive) + *Rails Sprinkles* (CSS/JS Bundling, Turbo, Stimulus) | **Use TOP.** Good coverage. |
+| 8 Async | Rails → *Mailers and Advanced Topics* (Websockets and ActionCable) | **Partial.** ActionCable only; no job queues, idempotency, or retries. |
+| 9 Performance | — | **Nothing.** |
+| 10 APIs | Rails → *APIs* (Building Your Own, External APIs, Kittens API, Pexels API) | **Decent start.** This plan adds versioning, serializers, token auth, rate limiting. |
+| 11 Payments | — | **Nothing.** |
+| 12 Security | — | **Nothing.** |
+| 13 Ops & deploy | Rails → *Deployment* (one lesson) | **Minimal.** |
+| 14 Real-codebase work | — | **Nothing.** TOP is greenfield-only by design. |
+
+Also worth taking from TOP outside the stage structure: **Ruby → *Intermediate Git***
+(remotes, "Git in the Real World"), which this plan otherwise treats as assumed.
+
+**Skip** TOP's *Intermediate/Advanced HTML and CSS*, *JavaScript*, and *React* courses
+— already covered by 20+ shipped Ember projects. React only if a specific job demands
+it, and then as a job requirement, not as learning.
+
+**Net:** TOP substantially covers stages 0, 2, 3, 7 and partly 4, 6, 10. This plan's
+irreducible value is stages **1, 5, 8, 9, 11, 12, 13, 14** — the production-Rails
+material no free curriculum teaches.
+
+### 6.2 Parallel track — CS fundamentals for interviews
+
+| Track | Contents | Est. h |
+|---|---|---|
+| **CS-I** | A very brief intro to CS, recursive methods & recursion, time complexity, space complexity, common data structures & algorithms, linked lists, hashmaps, binary search trees, Knight's Travails | 70 |
+
+Sourced directly from TOP's Ruby course, section *A Bit of Computer Science*, which is
+already sequenced and project-backed.
+
+**Run in parallel, not as a terminal stage.** Placing it after stage 14 would put it
+roughly two years out, which is useless — DS&A screens are common in **remote** hiring
+and are needed *before* the Rails depth is finished, not after. Schedule it as a
+recurring slice (e.g. one session in four) whenever job applications are active.
+
+This track is exempt from the §5.5 gating rule: it does not block or depend on any
+Rails stage.
 
 ---
 
@@ -249,13 +325,28 @@ mid-session curiosity so it is neither lost nor allowed to derail the stage in
 progress.
 
 ### 7.6 `docs/interview-prep.md`
-Three sections:
+**Technical only.** Three sections:
 - **Tradeoff talking points** — "chose X over Y because Z", the shape of a senior
   answer.
 - **Drill questions** — answered out loud, no files open. Sourced from failed gates.
 - **Known weak spots** — honest list, so it is not discovered live in an interview.
 
-### 7.7 `docs/reference-repos.md`
+### 7.7 `docs/job-search.md`
+The **non-technical** half of getting hired, split out from §7.6 because it is used at
+a different time, by a different mechanism, and is not gated by any stage. Seeded from
+TOP's *Getting Hired* course (`db/fixtures/paths/full_stack_rails/courses/getting_hired.rb`):
+
+- **Preparing** — professional networking, strategy, what companies want, personal site.
+- **Applying** — collecting and qualifying job leads, resume, applying, interviewing,
+  handling an offer.
+- **Freelance-specific** — scoping and estimating work, rates, contracts, client
+  screening. Not covered by TOP, which targets employment; added here because
+  freelancing is a stated goal.
+
+Deliberately not gated and not stage-dependent: this work should begin well before the
+Rails track finishes.
+
+### 7.8 `docs/reference-repos.md`
 The 2–3 picks, each with: what it is, which stages it serves, specific paths worth
 reading, and what it is *not* good for. Plus how to use the wider corpus on demand,
 including that `~/projects/rails-study/real-world-rails` is not on the
@@ -308,6 +399,9 @@ The system is working if, at any point:
 3. `progress.md` contains `~` marks — an all-`✓` board means the gates are too easy.
 4. `interview-prep.md` weak-spot list is non-empty and honest.
 5. Advancement has been gated by confidence, never by elapsed time.
+6. **Code has been written recently** — a TOP project or a starter-kit phase within
+   the last few weeks. Because §5.6 puts practice outside this doc set, gates can keep
+   passing while real ability stalls; this is the criterion that catches it.
 
 It has failed if it becomes a reading list with ticks next to it.
 
