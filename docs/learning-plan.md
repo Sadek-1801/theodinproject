@@ -182,7 +182,83 @@ transactions, locking, or constraints. Take SQL Zoo as a starting point; this st
 
 **Estimate:** 90 h (±30%)
 
-<!-- GATES: filled by Task 5 -->
+### Gate questions
+
+Answer in writing before opening any file. `psql` open is fine for questions 6–7 —
+running SQL is not the same as reading the answer.
+
+1. **Unique index vs uniqueness validation.** `db/schema.rb:69` is
+   `t.index ["email"], name: "index_admin_users_on_email", unique: true`, and
+   `app/models/user.rb:10` separately validates `uniqueness: true` on email. Why both?
+   Describe the exact race that the validation alone cannot prevent, and what the app
+   sees when the index catches it.
+
+2. **Composite index column order.** `db/schema.rb:33` and `db/schema.rb:34` index
+   `["owner_id", "owner_type"]` **and** `["owner_type", "owner_id"]` — the same two
+   columns in both orders, on the same table. Is one of them dead weight? Give the
+   query shape each one serves, and say what a B-tree's leftmost-prefix rule has to do
+   with it.
+
+3. **Missing foreign keys.** `db/schema.rb` has 64 `t.index` lines but only 13
+   `add_foreign_key` lines, across 44 models. Name three things that can go wrong in a
+   table with no FK constraint, then give the two most common legitimate reasons a
+   production team omits one. (Look at *which* tables have them before answering.)
+
+4. **What a transaction actually guarantees.** `app/models/user.rb:74` opens
+   `ActiveRecord::Base.transaction do` around a multi-row update; the same pattern is
+   at `app/services/users/reset_progress.rb:13` as `user.transaction do`. State what
+   is guaranteed if the block raises. Then state what is **not** guaranteed: at
+   Postgres's default isolation level, can a concurrent transaction see a row this
+   block already wrote? Can this block's own reads change between two statements?
+
+5. **Materialized views.** `db/views/` holds three Scenic views, e.g.
+   `db/views/user_sign_ups_day_stats_v01.sql:1`. What does a materialized view buy
+   that an index on the same table cannot? What is the cost, and what has to happen on
+   a schedule for it to stay useful? Why `_v01` in the filename?
+
+6. **`counter_cache` on existing data.** `app/models/user.rb:23` is
+   `belongs_to :path, optional: true, counter_cache: true`. What column must exist on
+   which table, and what is its exact name? Now the real question: you add this to a
+   table with 100k existing rows. What is the value of that column immediately
+   afterwards, and what do you have to do about it? Write the backfill.
+
+7. **Write the SQL, then explain it.** Without ActiveRecord, write SQL for: *users who
+   have completed at least one lesson in a given course*. Then run `EXPLAIN ANALYZE` on
+   it against the dev database. Which indexes did the planner use? Add
+   `ORDER BY users.created_at DESC LIMIT 20` — does the plan change, and why?
+
+8. **Zero-downtime migration.** You need to add a `NOT NULL` column with a default to
+   `users` in production, and rename another column. Write the migration sequence — how
+   many deploys, and in what order do code and schema change? What specifically goes
+   wrong if you do the rename in one step?
+
+### Anchors
+
+| File | Why |
+|---|---|
+| `db/schema.rb:1` | 396 lines, 64 indexes, 13 FK constraints. Read it end to end once — it is small enough, and schema reading is the skill. |
+| `db/schema.rb:33` | The both-orders composite index pair |
+| `db/schema.rb:69` | A unique index backing a model validation |
+| `app/models/user.rb:74` | `ActiveRecord::Base.transaction` around a multi-step change |
+| `app/services/users/reset_progress.rb:13` | `user.transaction` — same mechanism, instance-level entry point |
+| `db/views/user_sign_ups_day_stats_v01.sql:1` | Scenic materialized view; compare against the other two in `db/views/` |
+| `app/models/user.rb:23` | `counter_cache: true` on a `belongs_to` |
+
+**Outside this repo:** Postgres's own documentation on index types and isolation
+levels is the source here — this stage is the one where Rails docs are actively
+insufficient. TOP's Databases course is three lessons and does not cover any of the
+above; SQL Zoo is worth doing for join fluency and nothing beyond it.
+
+### Second exposure
+
+**gumroad**, at stage 11. Money modeling forces constraint and precision questions
+that a course platform never raises. Note the pairing when you get there rather than
+jumping ahead now.
+
+### Exit criteria
+
+Gates 1–8 at `✓`, plus: you can open `db/schema.rb:1` cold, pick any table, and say
+what each of its indexes is for and which are missing.
 
 ---
 
