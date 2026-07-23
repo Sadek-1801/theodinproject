@@ -48,13 +48,29 @@ REPO_ROOT = File.expand_path('../..', __dir__)
 RWR_ROOT  = File.expand_path('~/projects/rails-study/real-world-rails/apps')
 
 # Anything backtick-delimited that looks like it is trying to be a citation.
+#
+# "Looks like" is deliberately narrower than "ends in :<digits>". A journal
+# contains clock times (`12:30`), ratios (`3:2`), and references (`Genesis 1:1`)
+# that are not citations and must not fail the build. So the body must also
+# carry at least one letter before the line number and no interior spaces —
+# except after an `rwr:` prefix, where a stray space is exactly the malformed
+# shape two-stage detection exists to catch.
 LOOSE_CITATION = %r{
-  `                                        # opening backtick
-  (?<body>[^`\n]*:\d+)                     # ends in :<digits>
-  `                                        # closing backtick
+  `                                          # opening backtick
+  (?<body>
+    (?:rwr:\s*[^\s`]+\s+)?                   # optional picked-repo prefix
+    [\w./-]*[A-Za-z][\w./-]*                 # path-ish, at least one letter
+    :\d+                                     # line number
+  )
+  `                                          # closing backtick
 }x
 
 CODE_EXTENSIONS = %w[rb sql erb yml yaml js jsx ts tsx json rake ru haml slim].freeze
+
+# Real files that carry no extension. A fixed list, not an open pattern: an
+# unrestricted extensionless branch would treat any backticked word-plus-number
+# as an attempted citation and fail on it.
+EXTENSIONLESS_FILES = %w[Gemfile Rakefile Dockerfile Procfile Makefile Brewfile Guardfile Capfile].freeze
 
 # The real grammar. Matched against the *whole* body captured by LOOSE_CITATION
 # (anchored \A...\z) — no path-prefix allowlist, any path shape is acceptable;
@@ -65,7 +81,7 @@ STRICT_CITATION = %r{
   (?<path>
     [\w./-]+\.(?:#{CODE_EXTENSIONS.join('|')})  # path with a recognised code-file extension
     |
-    [\w/-]+                                     # or an extensionless bare filename (Gemfile, Rakefile, ...)
+    (?:[\w/-]+/)?(?:#{EXTENSIONLESS_FILES.join('|')})  # or a known extensionless file
   )
   :(?<line>\d+)
   \z
