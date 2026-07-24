@@ -6,7 +6,7 @@ abstraction, which is the point if the goal is walking into unfamiliar client co
 
 Past three repos this becomes a research project rather than learning. Hence: this repo
 as the primary specimen, three hand-picked apps as deliberate second exposures, and the
-remaining ~215 as an on-demand reference library.
+other 212 as an on-demand reference library.
 
 Second exposures are also naturally **spaced** — meeting `has_many :through` again in
 chatwoot weeks after meeting it here is spaced repetition, which beats massed study.
@@ -45,6 +45,18 @@ comparison against a specific pattern you have already met here.
 
 **What it is:** the creator-commerce platform, open-sourced in 2025. 424 MB.
 
+**Not in the corpus.** `real-world-rails` does not carry gumroad, so it is not a
+submodule and `bin/update` will never touch it. Clone it by hand into the same `apps/`
+directory — that placement is all `rwr:gumroad` citations need in order to resolve:
+
+```bash
+git clone --depth 1 https://github.com/antiwork/gumroad.git \
+  ~/projects/rails-study/real-world-rails/apps/gumroad
+```
+
+It then shows as untracked in that repo's `git status` permanently, which is expected
+rather than a problem. Refresh it with `git -C apps/gumroad pull`.
+
 **Serves:** real payments, payouts, refunds, and money modeling in production —
 integer cents, currency handling, invoicing, the reconciliation edge cases. Nothing in
 this repo touches money at all.
@@ -82,7 +94,7 @@ Rails — which is, again, representative of what freelance work actually looks 
 
 ## Using the wider corpus
 
-The remaining ~215 apps are a reference library, not a curriculum. Query them when a
+The other 212 apps are a reference library, not a curriculum. Query them when a
 specific question arises — "how do other people structure webhook handlers?" — never
 as reading material.
 
@@ -90,9 +102,18 @@ Search with the `/real-world-rails` skill. **Note:**
 `~/projects/rails-study/real-world-rails` is not on that skill's default search path
 and must be named explicitly in the request.
 
-Refresh submodules with `bin/update` in the `real-world-rails` checkout. Expect
-picked-repo paths to drift over months — which is why citations quote the line as well
-as numbering it.
+**Submodules hold no content until initialised.** A fresh clone of `real-world-rails`
+registers all 214 apps but checks out none of them, so a grep across the corpus finds
+nothing and reports no error — the failure is silent, and looks like an answered
+question. Pull an app when a question actually needs it:
+
+```bash
+git submodule update --init --depth 1 apps/<name>
+```
+
+Refresh initialised submodules with `bin/update` in the `real-world-rails` checkout;
+gumroad is excluded, per its section above. Expect picked-repo paths to drift over
+months — which is why citations quote the line as well as numbering it.
 
 ## Citing a pick
 
