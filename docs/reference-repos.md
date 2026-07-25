@@ -4,9 +4,11 @@ Seeing a pattern in one codebase teaches that codebase's version of it — you c
 separate the concept from local taste. Seeing it in two or three forces the
 abstraction, which is the point if the goal is walking into unfamiliar client code.
 
-Past three repos this becomes a research project rather than learning. Hence: this repo
-as the primary specimen, three hand-picked apps as deliberate second exposures, and the
-other 217 as an on-demand reference library.
+Past a small handful this becomes a research project rather than learning. Hence: this
+repo as the primary specimen, four hand-picked apps as deliberate second exposures, and
+the other 216 as an on-demand reference library. Four rather than three is a deliberate
+exception: stages 7 and 8 had no pick, and nothing else here shows the modern no-build
+house style — campfire earns the slot (below).
 
 Second exposures are also naturally **spaced** — meeting `has_many :through` again in
 chatwoot weeks after meeting it here is spaced repetition, which beats massed study.
@@ -68,6 +70,29 @@ idempotency handling.
 reads like one. That is itself instructive — but do not mistake it for a model to
 imitate.
 
+### once-campfire — stages 7, 8
+
+**What it is:** 37signals' real-time team chat, released as a ONCE app. Modern Hotwire
+with no build step — Turbo, Stimulus, Propshaft, importmap — the house style the official
+Rails reference-apps page now points at. 40 models, small enough to read end to end.
+
+**Serves:** the two stages nothing else here covers. Stage 7 (frontend in Rails) shows
+Hotwire used the way its authors intend it; stage 8 (async and broadcasting) shows the
+canonical case — six domain `ActionCable` channels (`app/channels/room_channel.rb`,
+`app/channels/presence_channel.rb`, plus typing, heartbeat, and read/unread rooms)
+driving Turbo Stream updates. Chat is the textbook broadcasting app, written here by the
+people who built the tooling.
+
+**Read:** `app/models/message/broadcasts.rb` — a model broadcasting its own
+create/update/remove — and `app/helpers/cable_helper.rb`, then trace one message from
+`app/controllers/messages_controller.rb` through its channel to the DOM. Its
+`has_secure_password` auth in `app/models/user.rb` is also a useful contrast with this
+repo's Devise.
+
+**Not good for:** money, multi-tenancy, or an API surface — it has none of them. It runs
+Redis-backed ActionCable rather than Solid Cable, so read it for the broadcasting
+patterns, not as the current default backend.
+
 ### lobsters — stage 14, and not before
 
 **What it is:** the link-aggregator running lobste.rs. 8.3 MB — small enough to read
@@ -93,7 +118,7 @@ Rails — which is, again, representative of what freelance work actually looks 
 
 ## Using the wider corpus
 
-The other 217 apps are a reference library, not a curriculum. Query them when a
+The other 216 apps are a reference library, not a curriculum. Query them when a
 specific question arises — "how do other people structure webhook handlers?" — never
 as reading material.
 
