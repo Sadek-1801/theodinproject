@@ -47,7 +47,7 @@ line numbers rot as both codebases move; the path plus the quoted snippet is the
 durable part.
 
 - This repo: `` `app/models/user.rb:23` ``
-- A picked repo: `` `rwr:chatwoot app/models/account.rb:40` ``
+- A picked repo: `` `rwr:chatwoot app/models/account.rb:41` ``
 
 Where the quote is a fenced code block directly under the citation, put it in that
 shape — the checker verifies those automatically:

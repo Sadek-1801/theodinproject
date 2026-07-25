@@ -6,7 +6,7 @@ abstraction, which is the point if the goal is walking into unfamiliar client co
 
 Past three repos this becomes a research project rather than learning. Hence: this repo
 as the primary specimen, three hand-picked apps as deliberate second exposures, and the
-other 212 as an on-demand reference library.
+other 217 as an on-demand reference library.
 
 Second exposures are also naturally **spaced** — meeting `has_many :through` again in
 chatwoot weeks after meeting it here is spaced repetition, which beats massed study.
@@ -45,17 +45,16 @@ comparison against a specific pattern you have already met here.
 
 **What it is:** the creator-commerce platform, open-sourced in 2025. 424 MB.
 
-**Not in the corpus.** `real-world-rails` does not carry gumroad, so it is not a
-submodule and `bin/update` will never touch it. Clone it by hand into the same `apps/`
-directory — that placement is all `rwr:gumroad` citations need in order to resolve:
+**In the corpus, but the heaviest app in it.** `real-world-rails` registers gumroad as
+a submodule (`apps/gumroad` → `antiwork/gumroad`, branch `main`), so initialise it the
+same way as any other pick and `rwr:gumroad` citations resolve against it:
 
 ```bash
-git clone --depth 1 https://github.com/antiwork/gumroad.git \
-  ~/projects/rails-study/real-world-rails/apps/gumroad
+git submodule update --init --depth 1 apps/gumroad
 ```
 
-It then shows as untracked in that repo's `git status` permanently, which is expected
-rather than a problem. Refresh it with `git -C apps/gumroad pull`.
+At 424 MB it is by far the largest app in the corpus — the `--depth 1` shallow init
+keeps that bearable. Refresh it with `bin/update` alongside the rest.
 
 **Serves:** real payments, payouts, refunds, and money modeling in production —
 integer cents, currency handling, invoicing, the reconciliation edge cases. Nothing in
@@ -94,7 +93,7 @@ Rails — which is, again, representative of what freelance work actually looks 
 
 ## Using the wider corpus
 
-The other 212 apps are a reference library, not a curriculum. Query them when a
+The other 217 apps are a reference library, not a curriculum. Query them when a
 specific question arises — "how do other people structure webhook handlers?" — never
 as reading material.
 
@@ -103,7 +102,7 @@ Search with the `/real-world-rails` skill. **Note:**
 and must be named explicitly in the request.
 
 **Submodules hold no content until initialised.** A fresh clone of `real-world-rails`
-registers all 214 apps but checks out none of them, so a grep across the corpus finds
+registers all 220 apps but checks out none of them, so a grep across the corpus finds
 nothing and reports no error — the failure is silent, and looks like an answered
 question. Pull an app when a question actually needs it:
 
@@ -111,12 +110,12 @@ question. Pull an app when a question actually needs it:
 git submodule update --init --depth 1 apps/<name>
 ```
 
-Refresh initialised submodules with `bin/update` in the `real-world-rails` checkout;
-gumroad is excluded, per its section above. Expect picked-repo paths to drift over
-months — which is why citations quote the line as well as numbering it.
+Refresh initialised submodules with `bin/update` in the `real-world-rails` checkout.
+Expect picked-repo paths to drift over months — which is why citations quote the line
+as well as numbering it.
 
 ## Citing a pick
 
-`` `rwr:chatwoot app/models/account.rb:40` `` — the `rwr:` prefix plus the app
+`` `rwr:chatwoot app/models/account.rb:41` `` — the `rwr:` prefix plus the app
 directory name, then the path within that app. `ruby docs/bin/verify_citations.rb`
 resolves these against `~/projects/rails-study/real-world-rails/apps/`.
