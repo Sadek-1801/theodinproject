@@ -42,7 +42,7 @@ can be partly `✓` without pretending the whole thing is.
 | 0.2 | `included do` vs plain module body | ~ | 2026-07-26 | 2026-08-16 |
 | 0.3 | `include` vs `extend` | ~ | 2026-07-26 | 2026-08-16 |
 | 0.4 | Method lookup, `prepend`, `ancestors` | ~ | 2026-07-26 | 2026-08-16 |
-| 0.5 | `Hash.new` with a default block | — | | |
+| 0.5 | `Hash.new` with a default block | ✓ | 2026-08-04 | 2nd exposure |
 | 0.6 | `\|\|=` and falsy memoization | — | | |
 | 0.7 | Keyword args and `foo:` shorthand | — | | |
 | 0.8 | `StandardError` vs `Exception`, `rescue_from` | — | | |
@@ -63,6 +63,7 @@ Newest first. One line each: date, what was attempted, what actually happened.
 
 | Date | Stage | What happened |
 |---|---|---|
+| 2026-08-04 | 0 | Gate 0.5: first gate passed cold on the written attempt. (a) block fires on a missing key, (b) once across three same-key lookups because `hash[c] =` stores it, (c) dropping the assignment turns the cache into a factory — right direction, sharpened to the concrete consequence (new object every call, inner caches lost). Ran the object_id/size repro, all four matched. Wrote concepts/hash-default-block.md. Marked ✓. |
 | 2026-07-26 | 0 | Gate 0.4: (a)/(b) cold — include puts module after class, prepend before, first match in `ancestors` wins. (c) had the right tools (owner, source_location) but wrong handle — must grab `obj.method(:x)`/`Class.instance_method(:x)` first, not call the method. Wrote concepts/method-lookup-and-reflection.md. Marked ~. |
 | 2026-07-26 | 0 | Gate 0.3: extend half of the rule was fuzzy; called `.ancestors` a list of methods (it's modules). Ran the irb repro — seeing `Concernish` sit 2nd in `singleton_class.ancestors` made it click: extend = insert into singleton chain, which is why `included` resolves. Wrote concepts/include-vs-extend.md. Marked ~. |
 | 2026-07-26 | 0 | Gate 0.2: receiver pairing right (has_many→class, liked_by? body→record). Missed *why* bare `has_many` fails — it's a load-time NoMethodError on the bare module, not misattachment. Sharpened concepts/included-do-and-self.md (corrected my own "wrong thing" imprecision). Marked ~. |
