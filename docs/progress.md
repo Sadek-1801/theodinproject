@@ -44,7 +44,7 @@ can be partly `✓` without pretending the whole thing is.
 | 0.4 | Method lookup, `prepend`, `ancestors` | ~ | 2026-07-26 | 2026-08-16 |
 | 0.5 | `Hash.new` with a default block | ✓ | 2026-08-04 | 2nd exposure |
 | 0.6 | `\|\|=` and falsy memoization | ~ | 2026-08-09 | 2026-08-30 |
-| 0.7 | Keyword args and `foo:` shorthand | — | | |
+| 0.7 | Keyword args and `foo:` shorthand | ✓ | 2026-08-09 | 2nd exposure |
 | 0.8 | `StandardError` vs `Exception`, `rescue_from` | — | | |
 
 ## Code written
@@ -63,6 +63,7 @@ Newest first. One line each: date, what was attempted, what actually happened.
 
 | Date | Stage | What happened |
 |---|---|---|
+| 2026-08-09 | 0 | Gate 0.7: clean cold pass, 3/3. (a) `exists?(user:)` → `exists?(user: user)`, punned from the `liked_by?(user)` param. (b) Ruby 3.1 (correct). (c) got the symbol-literal vs keyword-label distinction cold (colon-left = value, colon-right = param name); sharpened only the "why has_many uses a symbol" (open-ended name = data → symbol; known config switch → keyword). Wrote concepts/keyword-argument-shorthand.md. Marked ✓ — first cold pass since 0.5. |
 | 2026-08-09 | 0 | Gate 0.6: (a) poison value = `nil`/`false` — correct cold. (b) "a boolean" — right neighborhood but incomplete; didn't check that the three *memoized* methods all return Array/Integer (truthy, `0` included), so NONE hit the trap, and the boolean methods that could (`started?`/`completed?`) are deliberately unmemoized. Closed the gap through discussion + writing two LinkedIn posts (`!!0 => true`, false-never-caches). Wrote concepts/or-equals-memoization.md. Marked ~ (cold attempt partial; concept now ✓). |
 | 2026-08-04 | 0 | Gate 0.5: first gate passed cold on the written attempt. (a) block fires on a missing key, (b) once across three same-key lookups because `hash[c] =` stores it, (c) dropping the assignment turns the cache into a factory — right direction, sharpened to the concrete consequence (new object every call, inner caches lost). Ran the object_id/size repro, all four matched. Wrote concepts/hash-default-block.md. Marked ✓. |
 | 2026-07-26 | 0 | Gate 0.4: (a)/(b) cold — include puts module after class, prepend before, first match in `ancestors` wins. (c) had the right tools (owner, source_location) but wrong handle — must grab `obj.method(:x)`/`Class.instance_method(:x)` first, not call the method. Wrote concepts/method-lookup-and-reflection.md. Marked ~. |
