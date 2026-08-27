@@ -32,6 +32,29 @@ It does **not** misattach — it never gets that far. `included do` defers the c
 One-line version: `included do` means *"run this later, against the model — not now,
 against the module."*
 
+**The mechanism underneath** — `extend ActiveSupport::Concern` (`app/models/concerns/likeable.rb:2`):
+
+```ruby
+extend ActiveSupport::Concern
+```
+
+is what makes `included do` legal. Desugared, the hook is roughly:
+
+```ruby
+def self.included(base)   # base = the including class, handed in by Ruby
+  base.class_eval do      # reopen that class; self and the default definee become it
+    has_many :likes, ...
+  end
+end
+```
+
+`include Likeable` *calls* `Likeable.included(Comment)` immediately, mid-class-body —
+`self` inside `included` is the module (it's a method on the module), and `base` is the
+including class (Ruby passes it in). `class_eval` then re-runs the block with `self`
+rebound to `base`, which is the entire reason the class macro lands on the model.
+`included do … end` is sugar over exactly this `self.included(base)` + `base.class_eval`
+shape.
+
 **Contrast — instance method.** `app/models/concerns/likeable.rb:9`:
 
 ```ruby
@@ -49,6 +72,20 @@ method → `self` is the **record** → it goes in the module body.
 **My earlier mistakes** — I first said `self` was "an instance." Wrong twice over:
 it's the *class*, and a block has no "instances" anyway — the only question is what
 `self` is bound to while the block runs.
+
+**The anchor that kills the "instance" answer — the clock.** `included do` runs at
+**load time**, the instant the class body hits `include Likeable`. At that moment the
+only objects in existence are the module and the class — no `Comment.new` has run, no
+record has been born. So `self` *cannot* be an instance: there is no instance yet to be
+one. Instances belong to a different clock — **run time**, once per call per record —
+which is where `self.liked = true` (`app/models/concerns/likeable.rb:26`) lives:
+
+```ruby
+self.liked = true
+```
+
+One file, two clocks. Which `self` you get is decided entirely by which block, on which
+clock — not by anything you can read off the line in isolation.
 
 **Unrelated slip, parked here so it sticks** — the guard for `yield` with no block is
 `block_given?`, **not** `has_block?` (which does not exist):

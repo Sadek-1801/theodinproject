@@ -38,7 +38,7 @@ can be partly `✓` without pretending the whole thing is.
 
 | Gate | Topic | Confidence | Last tested | Resurface after |
 |---|---|---|---|---|
-| 0.1 | Blocks / procs / lambdas, `return` semantics | ~ | 2026-07-26 | 2026-08-16 |
+| 0.1 | Blocks / procs / lambdas, `return` semantics | ✓✓ | 2026-08-27 | 2026-09-27 |
 | 0.2 | `included do` vs plain module body | ~ | 2026-07-26 | 2026-08-16 |
 | 0.3 | `include` vs `extend` | ~ | 2026-07-26 | 2026-08-16 |
 | 0.4 | Method lookup, `prepend`, `ancestors` | ~ | 2026-07-26 | 2026-08-16 |
@@ -63,6 +63,7 @@ Newest first. One line each: date, what was attempted, what actually happened.
 
 | Date | Stage | What happened |
 |---|---|---|
+| 2026-08-27 | 0 | Gate 0.1(c) re-derivation (the recurring `self`-in-`included do` miss). Diagnosed 0.1(c)/0.2/0.8(c) as one blind spot — execution-context/timing facts that decay because rereading stores a sentence, not a trace. Fix: re-derive, don't re-read. Traced a toy `Trackable`/`Widget` concern cold in irb — predicted print order D,A,B,C correctly; learned `base.class_eval` (rebinds `self` + default definee to the class); derived the killer anchor unaided: at include-time no instance exists yet (no `.new` has run), so `self` can't be an instance — wrong clock. Connected back to likeable.rb (load-time `included do` self=class → `has_many` works; run-time methods self=record → `self.liked = true` works). Sharpened concepts/included-do-and-self.md with the class_eval mechanism + two-clocks anchor. First clean cold pass on (c) after a gap → ✓✓. |
 | 2026-08-23 | 0 | Gate 0.8: (b) `rescue Exception` swallows Ctrl-C/signals → can't kill process — clean. (a) knew StandardError=recoverable vs Exception=root but didn't name the above-StandardError errors (Interrupt/SystemExit/NoMemoryError/ScriptError) — thin. (c) two slips: attributed rescue_from to ActiveRecord (it's ActiveSupport::Rescuable; ActiveRecord only supplies the exception arg), and called `rescue` a "method-level catcher" (it's a keyword tied to a block) — missed keyword-vs-registered-method and register-at-load vs catch-at-request timing; had the scope distinction (controller-wide vs local) right. Wrote concepts/standard-error-vs-exception.md. Marked ~. |
 | 2026-08-23 | 0 | Gate 0.7: clean cold pass, 3/3. (a) `exists?(user:)` → `exists?(user: user)`, punned from the `liked_by?(user)` param. (b) Ruby 3.1 (correct). (c) got the symbol-literal vs keyword-label distinction cold (colon-left = value, colon-right = param name); sharpened only the "why has_many uses a symbol" (open-ended name = data → symbol; known config switch → keyword). Wrote concepts/keyword-argument-shorthand.md. Marked ✓ — first cold pass since 0.5. |
 | 2026-08-23 | 0 | Gate 0.6: (a) poison value = `nil`/`false` — correct cold. (b) "a boolean" — right neighborhood but incomplete; didn't check that the three *memoized* methods all return Array/Integer (truthy, `0` included), so NONE hit the trap, and the boolean methods that could (`started?`/`completed?`) are deliberately unmemoized. Closed the gap through discussion + writing two LinkedIn posts (`!!0 => true`, false-never-caches). Wrote concepts/or-equals-memoization.md. Marked ~ (cold attempt partial; concept now ✓). |
