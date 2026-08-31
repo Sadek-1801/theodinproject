@@ -10,6 +10,7 @@ for why this exists and how it is meant to work.
 |---|---|
 | [`learning-plan.md`](learning-plan.md) | The spine. 15 stages, each with gate questions, anchors, and exit criteria. Start here. |
 | [`progress.md`](progress.md) | Confidence per topic and when to resurface it. This is the scheduling data — without it there is no spacing. |
+| [`api-map.md`](api-map.md) | Every entry point in the app, the controllers behind them, the domain model, and the async edges. The orientation map — read it once before a stage that touches unfamiliar code. |
 | [`concepts/`](concepts/) | One file per concept, in my own words. Written when a gate fails or something clicks. |
 | [`questions.md`](questions.md) | Open questions caught mid-session so they neither get lost nor derail the stage in progress. |
 | [`interview-prep.md`](interview-prep.md) | Technical retrieval under pressure: tradeoff talking points, drills, honest weak spots. |
