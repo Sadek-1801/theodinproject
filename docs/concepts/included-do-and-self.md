@@ -64,6 +64,22 @@ def liked_by?(user)
 A bare `def` in the module body becomes an **instance** method. When it runs, `self` is
 the individual record (`a_project`), not the class.
 
+**The second rebind — a `def` *inside* `included do` is still an instance method.**
+`class_eval` rebinds two things, not one: `self` **and** the "default definee" — the
+thing a bare `def` attaches to. Both become the class. So a `def` written inside the
+block lands on **instances**, exactly as if you'd typed it straight in the class body:
+
+```ruby
+included do
+  def hello; end   # instance method: a_record.hello works, TheClass.hello raises
+end
+```
+
+This is the trap. "`self` becomes the class" tempts you to guess the `def` makes a
+*class* method. It doesn't. The two rebinds are separate facts: `self` decides who class
+macros are sent to; the default definee decides where a `def` lands. A `def` lands on
+instances either way — in the body or in `included do`.
+
 **The test that catches it every time** — ask *"class method or instance method?"*
 `has_many`, `attribute`, `validates`, `belongs_to` are class macros → they need `self`
 to be a **class** → they belong inside `included do`. A plain `def` is an instance
