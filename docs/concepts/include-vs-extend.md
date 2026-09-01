@@ -6,6 +6,14 @@
 itself* — for a class or module, that's a class-level method). Same mixin, two
 different destinations: the instance side vs. the singleton side.
 
+**The identity that explains the destination** — `extend M` is exactly
+`obj.singleton_class.include(M)`. `extend` is not a separate mechanism from `include`; it
+is `include` aimed one level up, at the singleton class. That is why extended methods land
+in `singleton_class.ancestors` and read as class-level: they are *instance* methods of the
+singleton class, and a class is the sole instance of its own singleton. So the whole rule
+collapses to one fact — `include` adds instance methods; `extend` adds instance methods to
+the singleton, which you then call on the object itself.
+
 **Where it shows up** — `app/models/concerns/likeable.rb:2`:
 
 ```ruby
