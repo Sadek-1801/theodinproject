@@ -34,6 +34,11 @@ Project.instance_method(:liked_by?).source_location  # => ["…/likeable.rb", 9]
 `.source_location` points at the exact file+line. The trap is reflexively writing
 `obj.method_name.owner` — that calls the method. It's `obj.method(:method_name).owner`.
 
+**`.owner` is the defining module, not the class you called on.** `comment.method(:liked_by?).owner`
+returns `Likeable`, not `Comment` — even though you asked a `Comment`. `owner` cuts straight
+through the ancestor chain to the link that actually holds the `def`. That's the point of it:
+the receiver's class tells you *who you asked*, `owner` tells you *who answered*.
+
 **Proof in one irb session — `.owner` flips with the verb:**
 
 ```ruby
