@@ -72,6 +72,28 @@ $calls  # => 3   (never cached — recomputed every call)
 
 Swap that `false` for any truthy value (`0`, `[]`, `"x"`) and `$calls` stops at `1`.
 
+**The fix when the answer really can be `false` — guard on `defined?`, not on the value.**
+You cannot change a predicate's return type to dodge the trap; `admin?` must stay boolean.
+Instead memoize on *whether the variable was assigned*, which is a different question from
+*whether its value is truthy*:
+
+```ruby
+def admin?
+  return @admin if defined?(@admin)   # true once @admin has been assigned — even to false
+  @admin = expensive_check
+end
+```
+
+- **1st call:** `@admin` was never assigned → `defined?(@admin)` is `nil` → run the check,
+  assign (say) `false`. `@admin` now holds `false`.
+- **2nd call:** `@admin` *is* assigned (holds `false`) → `defined?(@admin)` is truthy →
+  `return @admin` hands back the cached `false`. **No recompute.**
+
+The pivot in one line: **`||=` tests the value's truthiness; `defined?` tests the
+variable's assignment.** A variable assigned `false` fails the first test but passes the
+second — state vs. value. That is the only reliable way to memoize a legitimately-falsy
+result.
+
 **My earlier mistakes** — asked which *memoized* methods could hit the falsy trap, I
 answered "a boolean." Right neighborhood (booleans are where `false` lives), wrong
 target: I never checked the return types of the three methods that are *actually*
