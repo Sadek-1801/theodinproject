@@ -29,6 +29,15 @@ for why this exists and how it is meant to work.
 6. Advance when every gate in the stage is at `✓` or better — not when the estimated
    hours are spent.
 
+### Prep before a gate
+
+- **First attempt:** get a short prep list first — the specific TOP lesson, guide
+  section, or repo file to read. Then wait at least a day before answering, so the
+  gate tests what stayed rather than what was just read.
+- **Re-test:** no prep. It stays cold. Study comes after, aimed at whatever was missed.
+
+Prepping right before a re-test makes the mark measure an hour of memory, not weeks.
+
 ## Confidence marks
 
 | Mark | Meaning | Action |
