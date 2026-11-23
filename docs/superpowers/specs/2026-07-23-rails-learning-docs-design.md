@@ -50,6 +50,10 @@ Four gaps follow directly from that history and shape the curriculum:
 **Design consequence:** pitch at *review* level — prompt recall, fill gaps — except
 for stages 4, 10, 11, and 14, which are genuinely new and are taught from zero.
 
+**Corrected 2026-11-23:** Stage 0 was not review. The Ruby base had decayed further
+than this section assumed, so Stage 0 now starts at TOP's *Basic Ruby*. Check each
+later stage's pitch against what the learner can actually do before starting it.
+
 ---
 
 ## 3. Non-goals

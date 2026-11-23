@@ -13,7 +13,7 @@ mechanism; skipping it turns this into a reading list.
 
 | # | Stage | Est. h | Status |
 |---|---|---|---|
-| 0 | [Ruby fluency](#stage-0--ruby-fluency) | 70 | authored |
+| 0 | [Ruby fluency](#stage-0--ruby-fluency) | 70+ | authored |
 | 1 | [The database](#stage-1--the-database) | 90 | authored |
 | 2 | [ActiveRecord depth](#stage-2--activerecord-depth) | 80 | authored |
 | 3 | [Request layer](#stage-3--request-layer) | 45 | scope only |
@@ -85,15 +85,25 @@ method lookup & `self`, Enumerable, exceptions, light metaprogramming (`define_m
 `send`, `method_missing`), Ruby 3 idiom (keyword args, safe navigation, pattern
 matching).
 
-**TOP:** Use TOP's Ruby course → *Advanced Ruby* (Blocks, Pattern Matching, Custom
-Enumerables) and *OOP Basics* as the guided path. **Skip *Basic Ruby*** — below level
-after Hartl.
+**TOP:** Work through TOP's Ruby course in order, starting at *Basic Ruby*. The July
+plan skipped *Basic Ruby* on the assumption that Hartl left a working base. By
+November that had proved wrong: the gates kept testing material that was never
+learned.
 
-**Estimate:** 70 h (±30%)
+1. ***Basic Ruby*** lessons. Before each lesson, try its Knowledge check. If you can
+   answer every question, skip the lesson. Otherwise, do it.
+2. ***Basic Ruby Projects***: Caesar Cipher, Sub Strings, Stock Picker, Bubble Sort.
+3. ***Object Oriented Programming*** lesson, then Tic Tac Toe and Mastermind.
+4. ***Advanced Ruby***: Blocks, Pattern Matching, Custom Enumerables.
+
+The gates below come after step 4.
+
+**Estimate:** 70 h was set before steps 1–3 were added. Re-estimate once step 1 shows
+how much of *Basic Ruby* is needed.
 
 ### Gate questions
 
-Answer in writing before opening any file.
+Answer in writing before opening any file. Do these after step 4 above.
 
 1. **Blocks, procs, and lambdas.** What does `return` do inside a lambda versus inside
    a proc? What about `yield` inside a method that was called without a block? Then
@@ -131,9 +141,7 @@ Answer in writing before opening any file.
 
 8. **Exceptions.** Ruby's `rescue` with no class named catches `StandardError`, not
    `Exception`. Why does that distinction matter, and what would you break by writing
-   `rescue Exception`? Anchor: `app/controllers/application_controller.rb:10`,
-   `rescue_from ActiveRecord::RecordNotFound, with: :not_found_error` — is `rescue_from`
-   the same mechanism as `rescue`?
+   `rescue Exception`? (The `rescue_from` half of this gate moved to Stage 3.)
 
 ### Anchors
 
@@ -143,7 +151,6 @@ Answer in writing before opening any file.
 | `app/models/user.rb:45` | `Hash.new` with a default block — a closure capturing `self` |
 | `app/services/course_progress.rb:24` | `\|\|=` memoization, three times in one file |
 | `app/models/project_submission.rb:5` | `before_update do` — a callback in block form; contrast with the symbol form at `app/models/user.rb:4` |
-| `app/controllers/application_controller.rb:10` | `rescue_from` as a class-level analogue of `rescue` |
 
 **Not anchorable here.** This repo contains no `define_method`, `method_missing`,
 `each_with_object`, `reduce`, or `inject` in `app/` — a finding worth noticing in its
@@ -369,7 +376,9 @@ state the SQL it will emit and which columns must exist for it to work.
 
 **Scope:** Rack & the middleware stack, routing depth (constraints, nesting, concerns,
 defaults), filters, strong params, sessions & cookies & CSRF, status codes &
-redirects, caching headers, content negotiation.
+redirects, caching headers, content negotiation, `rescue_from` vs `rescue`
+(`app/controllers/application_controller.rb:10`,
+`rescue_from ActiveRecord::RecordNotFound, with: :not_found_error`).
 
 **TOP:** Use TOP's *Rails Basics* (Routing, Controllers, Views, Store App). This stage
 adds Rack/middleware depth.

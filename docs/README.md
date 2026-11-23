@@ -19,7 +19,8 @@ for why this exists and how it is meant to work.
 
 ## The workflow
 
-1. Open the current stage in `learning-plan.md`.
+1. Open the current stage in `learning-plan.md`. Do its TOP lessons and projects
+   first. The gates check what stuck; they don't teach.
 2. **Answer the gate questions before opening any code.** A wrong written answer beats
    a skimmed correct one — the attempt is the learning; the pass/fail is a side
    benefit.
@@ -31,12 +32,9 @@ for why this exists and how it is meant to work.
 
 ### Prep before a gate
 
-- **First attempt:** get a short prep list first — the specific TOP lesson, guide
-  section, or repo file to read. Then wait at least a day before answering, so the
-  gate tests what stayed rather than what was just read.
-- **Re-test:** no prep. It stays cold. Study comes after, aimed at whatever was missed.
-
-Prepping right before a re-test makes the mark measure an hour of memory, not weeks.
+Before every gate, first attempt or re-test, get a short prep list: the specific TOP
+lesson, guide section, or repo file to read. Then wait at least a day before
+answering, so the gate tests what stayed rather than what was just read.
 
 ## Confidence marks
 

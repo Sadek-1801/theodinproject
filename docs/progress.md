@@ -36,6 +36,17 @@ can be partly `✓` without pretending the whole thing is.
 
 **Stage 0 — Ruby fluency**
 
+TOP's Ruby course comes first. See Stage 0 in `learning-plan.md` for the steps.
+
+| Step | TOP section | Status |
+|---|---|---|
+| 1 | Basic Ruby | — |
+| 2 | Basic Ruby Projects | — |
+| 3 | Object Oriented Programming, Tic Tac Toe, Mastermind | — |
+| 4 | Advanced Ruby | — |
+
+The gates are paused until step 4 is done. Their resurface dates no longer apply.
+
 | Gate | Topic | Confidence | Last tested | Resurface after |
 |---|---|---|---|---|
 | 0.1 | Blocks / procs / lambdas, `return` semantics | ✓✓ | 2026-08-27 | 2026-09-27 |
@@ -45,7 +56,7 @@ can be partly `✓` without pretending the whole thing is.
 | 0.5 | `Hash.new` with a default block | ✓ | 2026-09-10 | 2026-09-24 |
 | 0.6 | `\|\|=` and falsy memoization | ~ | 2026-09-15 | 2026-09-29 |
 | 0.7 | Keyword args and `foo:` shorthand | ✓ | 2026-08-23 | 2nd exposure |
-| 0.8 | `StandardError` vs `Exception`, `rescue_from` | ~ | 2026-08-23 | 2026-09-13 |
+| 0.8 | `StandardError` vs `Exception` (`rescue_from` moved to Stage 3) | ~ | 2026-08-23 | 2026-09-13 |
 
 ## Code written
 
@@ -63,6 +74,7 @@ Newest first. One line each: date, what was attempted, what actually happened.
 
 | Date | Stage | What happened |
 |---|---|---|
+| 2026-11-23 | 0 | Paused the gates. Stage 0 was pitched as review of Hartl, but basic Ruby was never solid, so the gates kept testing unlearned material. Stage 0 now starts with TOP's Ruby course at *Basic Ruby*; the gates resume after *Advanced Ruby*. Moved `rescue_from` to Stage 3. |
 | 2026-09-15 | 0 | Gate 0.6 re-test (was ~ from 2026-08-23), held at ~ — real improvement, not clean. (a) desugar `@x || (@x = expr)` fine, but didn't name the exact falsy set cold (`nil`/`false` only; `0`/`""`/`[]` truthy) — needed a nudge, and that precision *is* the gate. (b) the strong one, cold: truthy-types-are-safe reasoning correct, named the boolean-return danger; I added the design payoff (started?/completed? deliberately unmemoized because they can return false). (c) diagnosis right (false recomputes forever, no error) but the *fix* was wrong cold ("return string/number") and the `defined?` mechanism only landed after I traced it. Sharpened or-equals-memoization.md with the missing (c): the `defined?`-guard idiom, "||= tests the value's truthiness, defined? tests the variable's assignment — state vs value." Resurface 2026-09-29 (2wk). |
 | 2026-09-10 | 0 | Gate 0.5 re-test (2nd exposure, held at ✓). (b) once-per-key + (c) factory-vs-cache core solid cold — drill confirmed 3× `0`, block runs every read, hash stays `{}`. (a) wobbled: told the memoization story but didn't isolate the trigger. Sharpened nothing — hash-default-block.md already leads with "fires only on a missing key... the only trigger" (lines 11-13); decay was in recall, not the note. Resurface 2026-09-24 (2wk) to retest the trigger-naming cold. |
 | 2026-09-10 | 0 | Gate 0.4 re-test (was ~ from 2026-07-26), marked ✓ — leaned on the drill. (a) include→after class, prepend→before: clean cold. (b) outcome clean cold; the *rule* ("first match down `ancestors` wins", prepend wins by sitting ahead, `super` reaches back) needed one nudge to name. (c) the July "wrong handle" spot — went blank cold, re-derived via drill: `p.hi.owner` is the trap (calls the method, `.owner` runs on the returned string); right handle is `p.method(:x)` / `Class.instance_method(:x)`, then `.owner`/`.source_location`. Key surprise that stuck: `.owner` returns the *defining* module (`Greet`/`Likeable`), not the class you called on. Sharpened method-lookup-and-reflection.md with the "who you asked vs who answered" fact. Resurface 2026-09-24 (2wk) since (c) still decays. |
